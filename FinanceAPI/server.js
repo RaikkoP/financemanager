@@ -2,7 +2,10 @@ require('dotenv').config()
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const { isNotNull } = require('drizzle-orm');
 const app = express();
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 app.use(cors());
 
 const db = mysql.createConnection({
@@ -15,7 +18,7 @@ const db = mysql.createConnection({
 //Added test account with data
 app.get('/test', (req, res) => {
     const sql = 
-    "INSERT INTO Users (username, password) VALUES('test5', 'test5')"
+    "INSERT INTO Users (username, password) VALUES ('test5', 'test5')"
     db.query(sql, (err, data) => {
         if (err) {
             console.log(err);
@@ -75,8 +78,17 @@ app.get('/get/finance', (req, res) => {
 })
 
 app.post('/create/finance', (req, res) => {
-
-});
+    const getData = "SELECT data FROM UserData WHERE userId = (SELECT id FROM Users WHERE username = 'test5')";
+    db.query(getData, req.body, (err, data) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ message: "An error occurred: Database error" });
+      } else {
+        console.log(req.body)
+        console.log(data[0].data);
+      }
+    });
+  })
 
 app.get('/', (req, res) => {
     return console.log('Whats good!')

@@ -26,7 +26,7 @@ export default function Dashboard()  {
     return (
         <>
             <Header></Header>
-            <Form expenses={data} setExpenses={setData}></Form>
+            <Form expenses={data}></Form>
             <Filters expenses={data}></Filters>
         </>     
     )

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Expense from "../../class/Expense";
+import axios from 'axios';
 
-export default function Form(props){
+export default function Form(props) {
 
     const [open, setOpen] = useState(false);
     const [transaction, setTransaction] = useState('');
@@ -20,16 +21,27 @@ export default function Form(props){
         event.preventDefault();
         setAmount(event.target.value);
     }
-    function onFormSubmit(event)  {
+    async function onFormSubmit(event) {
         event.preventDefault();
         const newExpense = new Expense(transaction, type, amount);
-        props.setExpenses([...props.expenses, newExpense]);
-        setTransaction('');
-        setType('Income');
-        setAmount('');
+        console.log(newExpense);
+        try {
+            const response = await axios.post("http://localhost:5000/create/finance", newExpense, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            setTransaction('');
+            setType('Income');
+            setAmount('');
+            console.log(response);
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
-    return(
+    return (
         <>
             <div className="flex justify-center">
                 {
@@ -45,13 +57,13 @@ export default function Form(props){
                 open &&
                 <form className="mt-8 w-[25%] mx-auto flex flex-col justify-center">
                     <label htmlFor="transaction">Transaction Name:</label>
-                    <input className="mb-4" onChange={(event) => handleTransactionChange(event)} value={transaction} placeholder="Paycheck" type="text" id="transaction" name="transaction"/>
+                    <input className="mb-4" onChange={(event) => handleTransactionChange(event)} value={transaction} placeholder="Paycheck" type="text" id="transaction" name="transaction" />
                     <select className="mb-2" onChange={(event) => handleTypeChange(event)} value={type} id="type" name="type">
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
                     </select>
                     <label htmlFor="amount">Amount:</label>
-                    <input className="mb-2" onChange={(event) => handleAmountChange(event)} value={amount} placeholder="900$" type="text" id="amount" name="amount"/>
+                    <input className="mb-2" onChange={(event) => handleAmountChange(event)} value={amount} placeholder="900$" type="text" id="amount" name="amount" />
                     <button onClick={(event) => onFormSubmit(event)} className="border border-neutral-600 p-4">Submit</button>
                 </form>
             }
