@@ -83,17 +83,13 @@ app.post('/create/finance', (req, res) => {
             console.log(err);
             res.status(500).json({ message: "An error occurred: Database error" });
         }
-        console.log(data);
         let newData = [];
         let oldData = [];
         if(data[0].data === null || data[0].data === undefined) {
             newData = [req.body];
-            console.log(newData);
         } else if (data.length > 0) {
             oldData = JSON.parse(data[0].data);
-            console.log(oldData);
             newData = [...oldData, req.body];
-            console.log(newData);
         } 
         const updateData = `UPDATE UserData set data = '${JSON.stringify(newData)}' WHERE userId = (SELECT id FROM Users WHERE username = 'test5')`;
         db.query(updateData, newData, (err, data) => {

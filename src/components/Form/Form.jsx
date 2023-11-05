@@ -29,9 +29,9 @@ export default function Form(props) {
         setAmount('');
         console.log(newExpense);
         try {
-            const response = await axios.post("http://localhost:5000/create/finance", newExpense, {
-            });
+            const response = await axios.post("http://localhost:5000/create/finance", newExpense);
             console.log(response);
+            props.getData();
         }
         catch (err) {
             console.log(err);
