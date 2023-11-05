@@ -2,7 +2,6 @@ require('dotenv').config()
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
-const { isNotNull } = require('drizzle-orm');
 const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
