@@ -1,13 +1,32 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from 'axios';
 
 export default function Filters(props) {
 
     const [filter, setFilter] = useState('All');
+    const tables = ["Name", "Type", "Amount", "Date"];
+    const [data, setData] = useState([]);
+
+
     const changeFilter = (newSetting) => setFilter(newSetting);
-    const tables = ["Name", "Type", "Amount", "Date"]
+
+    async function getData() {
+        axios.get('http://localhost:5000/get/finance')
+            .then(function (response) {
+                console.log(response);
+                setData([...data, ...response.data]);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+
+    useEffect(() => {
+        getData();
+    },[])
 
 
-    const filteredData = filter === "All" ? props.expenses : props.expenses.filter((expense) => expense.type === filter);
+    const filteredData = filter === "All" ? data : data.filter((data) => data.type === filter);
 
     return (
         <>
@@ -24,19 +43,19 @@ export default function Filters(props) {
                 ))}
             </div>
             {
-            filteredData.map((expense) => (
-                <div key={expense.id} className="w-[80vw] auto-rows-auto mx-auto grid grid-cols-4 text-2xl">
+            filteredData.map((data) => (
+                <div key={data.id} className="w-[80vw] auto-rows-auto mx-auto grid grid-cols-4 text-2xl">
                     <div className="border border-neutral-600 p-4">
-                        <h2 className="text-center">{expense.name}</h2>
+                        <h2 className="text-center">{data.name}</h2>
                     </div>
                     <div className="border border-neutral-600 p-4">
-                        <h2 className="text-center">{expense.type}</h2>
+                        <h2 className="text-center">{data.type}</h2>
                     </div>
                     <div className="border border-neutral-600 p-4">
-                        <h2 className="text-center">{expense.amount}</h2>
+                        <h2 className="text-center">{data.amount}</h2>
                     </div>
                     <div className="border border-neutral-600 p-4">
-                        <h2 className="text-center">{expense.date}</h2>
+                        <h2 className="text-center">{data.date}</h2>
                     </div>
                 </div>
             ))}

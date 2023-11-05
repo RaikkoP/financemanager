@@ -24,16 +24,13 @@ export default function Form(props) {
     async function onFormSubmit(event) {
         event.preventDefault();
         const newExpense = new Expense(transaction, type, amount);
+        setTransaction('');
+        setType('Income');
+        setAmount('');
         console.log(newExpense);
         try {
             const response = await axios.post("http://localhost:5000/create/finance", newExpense, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
             });
-            setTransaction('');
-            setType('Income');
-            setAmount('');
             console.log(response);
         }
         catch (err) {

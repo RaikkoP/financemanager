@@ -16,8 +16,8 @@ const db = mysql.createConnection({
 
 //Added test account with data
 app.get('/test', (req, res) => {
-    const sql = 
-    "INSERT INTO Users (username, password) VALUES ('test5', 'test5')"
+    const sql =
+        "INSERT INTO Users (username, password) VALUES ('test5', 'test5')"
     db.query(sql, (err, data) => {
         if (err) {
             console.log(err);
@@ -55,7 +55,7 @@ app.get('/test', (req, res) => {
         }
     ]);
     const sql2 =
-    `INSERT INTO UserData (userId, data) SELECT id, '${jsonData}' AS data FROM Users WHERE username = 'test5'`
+        `INSERT INTO UserData (userId, data) SELECT id, '${jsonData}' AS data FROM Users WHERE username = 'test5'`
     db.query(sql2, (err, data) => {
         if (err) {
             console.log(err);
@@ -67,10 +67,10 @@ app.get('/test', (req, res) => {
 app.get('/get/finance', (req, res) => {
     const sql = "SELECT data FROM UserData WHERE userId = (SELECT id FROM Users WHERE username = 'test5')";
     db.query(sql, (err, data) => {
-        if(err) {
+        if (err) {
             console.log(err);
         }
-        if(data.length > 0) {
+        if (data.length > 0) {
             res.send(JSON.parse(data[0].data));
         }
     });
@@ -79,15 +79,32 @@ app.get('/get/finance', (req, res) => {
 app.post('/create/finance', (req, res) => {
     const getData = "SELECT data FROM UserData WHERE userId = (SELECT id FROM Users WHERE username = 'test5')";
     db.query(getData, req.body, (err, data) => {
-      if (err) {
-        console.log(err);
-        res.status(500).json({ message: "An error occurred: Database error" });
-      } else {
-        console.log(req.body)
-        console.log(data[0].data);
-      }
+        if (err) {
+            console.log(err);
+            res.status(500).json({ message: "An error occurred: Database error" });
+        }
+        console.log(data);
+        let newData = [];
+        let oldData = [];
+        if(data[0].data === null || data[0].data === undefined) {
+            newData = [req.body];
+            console.log(newData);
+        } else if (data.length > 0) {
+            oldData = JSON.parse(data[0].data);
+            console.log(oldData);
+            newData = [...oldData, req.body];
+            console.log(newData);
+        } 
+        const updateData = `UPDATE UserData set data = '${JSON.stringify(newData)}' WHERE userId = (SELECT id FROM Users WHERE username = 'test5')`;
+        db.query(updateData, newData, (err, data) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({ message: "An error occured while updating data" })
+            } 
+            console.log("Updated data: " + data)
+        })
     });
-  })
+})
 
 app.get('/', (req, res) => {
     return console.log('Whats good!')

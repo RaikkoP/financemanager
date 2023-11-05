@@ -5,6 +5,6 @@ export default class Expense {
       this.name = name;
       this.type = type;
       this.amount = amount;
-      this.date = '10.02.2023';
+      this.date = new Date().toJSON().slice(0, 10);
     }
   }
